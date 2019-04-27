@@ -33,7 +33,7 @@ public class PlantBed_Script : MonoBehaviour
         }
         if (_allowInteraction)
         {
-            if (Input.GetButtonDown("Fire1"))
+            if (Input.GetButtonDown("Plant"))
             {
                 if (!_fertilized)
                 {
@@ -101,12 +101,15 @@ public class PlantBed_Script : MonoBehaviour
     {
         if (!_planted && _fertilized)
         {
-            Debug.Log("seed planeted");
-            _playerInv.UseSeed(0);
-            seedDrop = _playerInv.Seeds[0].SeedDrop;
-            seedGiveAmount = _playerInv.Seeds[0].SeeDropAmount;
-            _spriteRenderer.color = Color.green;
-            _planted = true;
+            if (_playerInv.Seeds[0].SeedCount > 0)
+            {
+                Debug.Log("seed planeted");
+                _playerInv.UseSeed(0);
+                seedDrop = _playerInv.Seeds[0].SeedDrop;
+                seedGiveAmount = _playerInv.Seeds[0].SeeDropAmount;
+                _spriteRenderer.color = Color.green;
+                _planted = true;
+            }
         }
     }
 
@@ -130,7 +133,7 @@ public class PlantBed_Script : MonoBehaviour
     {
         if (_fullyGrown)
         {
-            _spriteRenderer.color = Color.white;
+            _spriteRenderer.color = Color.green;
             _planted = false;
             _fullyGrown = false;
             _growTimer = 4;

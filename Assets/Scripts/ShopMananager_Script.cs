@@ -42,7 +42,7 @@ public class ShopMananager_Script : MonoBehaviour
 
     public void Item1()
     {
-        if (StoredBlood >= ItemsForSale[0].ItemCost)
+        /*if (StoredBlood >= ItemsForSale[0].ItemCost)
         {
             //test seed
             _playerInv.Seeds[0].SeedCount += ItemsForSale[0].ItemAmountGiven;
@@ -50,11 +50,18 @@ public class ShopMananager_Script : MonoBehaviour
             _playerInv.Seeds[0].SeedDrop = ItemsForSale[0].ItemPrefab;
             _playerInv.Seeds[0].SeeDropAmount = ItemsForSale[0].ItemDropAmount;
             //_playerInv.UseBlood(ItemsForSale[0].ItemCost);
-            StoredBlood -= ItemsForSale[0].ItemCost;
+            //StoredBlood -= ItemsForSale[0].ItemCost;
+            
             UpdateBloodBankUI();
+        }*/
 
-
-        }
+        _playerInv.Seeds[0].SeedCount += ItemsForSale[0].ItemAmountGiven;
+        _playerInv.Seeds[0].SeedName = ItemsForSale[0].ItemName;
+        _playerInv.Seeds[0].SeedDrop = ItemsForSale[0].ItemPrefab;
+        _playerInv.Seeds[0].SeeDropAmount = ItemsForSale[0].ItemDropAmount;
+        SpendBlood(ItemsForSale[0].ItemCost);
+        _playerInv.UpdateSeedText();
+        UpdateBloodBankUI();
     }
 
     public void StoreBlood()
@@ -62,7 +69,27 @@ public class ShopMananager_Script : MonoBehaviour
         _playerInv.UseBlood(StoreBloodAmount);
         StoredBlood += StoreBloodAmount;
         UpdateBloodBankUI();
+    }
 
+    void SpendBlood(int a)
+    {
+        int temp = a;
+        if (StoredBlood < a)
+        {
+
+            a -= StoredBlood;
+            StoredBlood -= temp;
+            _playerInv.UseBlood(a);
+            if (StoredBlood < 0)
+            {
+                StoredBlood = 0;
+            }
+        }
+        else if(StoredBlood - a >= 0)
+        {
+            StoredBlood -= a;
+            UpdateBloodBankUI();
+        }
     }
 
     void OnTriggerEnter2D(Collider2D col)
