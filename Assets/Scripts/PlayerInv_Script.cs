@@ -8,11 +8,12 @@ public class PlayerInv_Script : MonoBehaviour
     [Serializable]
     public class AllSeeds
     {
-        public int SeedID = 1;
-        public string SeedName = "Test Seed";
-        public int SeedCount = 5;
+        public string SeedName;
+        public int SeedID;
+        public GameObject SeedDrop;
+        public int SeeDropAmount;
+        public int SeedCount;
     }
-
     public AllSeeds[] Seeds;
 
     public int MaxBloodAmount = 100;
@@ -38,7 +39,8 @@ public class PlayerInv_Script : MonoBehaviour
         //TO-DO: spawn some blood stain effect or somthing and slite cam shake
         if (BloodAmount <= 0)
         {
-            Debug.Log("player dead");
+            Debug.Log("player dead, you bleed out");
+            this.gameObject.SetActive(false);
         }
     }
 
