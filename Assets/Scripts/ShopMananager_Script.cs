@@ -8,10 +8,16 @@ using UnityEngine.UI;
 public class ShopMananager_Script : MonoBehaviour
 {
     private PlayerInv_Script _playerInv;
+    private PlayerInput_Script _playerInput;
+    private Sword_Script _sword;
     public GameObject ShopUI;
     public TextMeshProUGUI BloodBankText;
     public Button[] ShopButtons;
     private List<TextMeshProUGUI> _shopButtonsTexts;
+    private GameMananger_Script _gameManangerScript;
+    private GameObject _infoTextScreen;
+    private TextMeshProUGUI _infoText;
+
 
     [Serializable]
     public class AllItems
@@ -21,11 +27,11 @@ public class ShopMananager_Script : MonoBehaviour
         public string ItemFlavourText;
         public int ItemID;
         public int ItemCost;
-        public int ItemAmountGiven;
+        public int ItemCostIncrease;
+        public float ItemAmountGiven;
         public GameObject ItemPrefab;
         public int ItemDropAmount;
     }
-
     public AllItems[] ItemsForSale;
 
     public int StoreBloodAmount;
@@ -34,6 +40,11 @@ public class ShopMananager_Script : MonoBehaviour
 	void Start ()
 	{
 	    _playerInv = FindObjectOfType<PlayerInv_Script>();
+	    _playerInput = _playerInv.GetComponent<PlayerInput_Script>();
+	    _sword = _playerInv.transform.GetComponentInChildren<Sword_Script>();
+	    _gameManangerScript = _playerInv.GameManagScript;
+	    _infoTextScreen = ShopButtons[0].transform.parent.parent.GetChild(2).gameObject;
+	    _infoText = _infoTextScreen.GetComponentInChildren<TextMeshProUGUI>();
 	    ShopUI.SetActive(false);
 	    UpdateBloodBankUI();
         _shopButtonsTexts = new List<TextMeshProUGUI>();
@@ -55,7 +66,7 @@ public class ShopMananager_Script : MonoBehaviour
             UpdateBloodBankUI();
         }*/
 
-        _playerInv.Seeds[0].SeedCount += ItemsForSale[0].ItemAmountGiven;
+        _playerInv.Seeds[0].SeedCount += (int) ItemsForSale[0].ItemAmountGiven;
         _playerInv.Seeds[0].SeedName = ItemsForSale[0].ItemName;
         _playerInv.Seeds[0].SeedDrop = ItemsForSale[0].ItemPrefab;
         _playerInv.Seeds[0].SeeDropAmount = ItemsForSale[0].ItemDropAmount;
@@ -69,6 +80,63 @@ public class ShopMananager_Script : MonoBehaviour
         _playerInv.UseBlood(StoreBloodAmount);
         StoredBlood += StoreBloodAmount;
         UpdateBloodBankUI();
+    }
+
+    public void UpgradeAttackspeed()
+    {
+        float a = _playerInput.UpgradeAttackSpeed(ItemsForSale[1].ItemAmountGiven);
+        SpendBlood(ItemsForSale[1].ItemCost);
+        ItemsForSale[1].ItemCost += ItemsForSale[1].ItemCostIncrease;
+        _shopButtonsTexts[1].text = ItemsForSale[1].ItemName +"\n" + ItemsForSale[1].ItemCost;
+        Debug.Log("a: " +a);
+        if (a < 0.5f)
+        {
+            ShopButtons[1].interactable = false;
+            _shopButtonsTexts[1].text = "At max";
+        }
+    }
+
+    public void UpgradeFertilzeCost()
+    {
+        float a = _playerInv.UpgradeFertilizeCost(ItemsForSale[2].ItemAmountGiven);
+        SpendBlood(ItemsForSale[2].ItemCost);
+        ItemsForSale[2].ItemCost += ItemsForSale[2].ItemCostIncrease;
+        _shopButtonsTexts[2].text = ItemsForSale[2].ItemName + "\n" + ItemsForSale[2].ItemCost;
+        if (a < 5)
+        {
+            ShopButtons[2].interactable = false;
+            _shopButtonsTexts[2].text = "At max";
+        }
+    }
+
+    public void BuyBloodSword()
+    {
+        float a = _sword.IncreaseBloodgain((int) ItemsForSale[3].ItemAmountGiven);
+        SpendBlood(ItemsForSale[3].ItemCost);
+        ItemsForSale[3].ItemCost += ItemsForSale[3].ItemCostIncrease;
+        _shopButtonsTexts[3].text = ItemsForSale[3].ItemName + "\n" + ItemsForSale[3].ItemCost;
+        if (a > 6)
+        {
+            ShopButtons[3].interactable = false;
+            _shopButtonsTexts[3].text = "At max";
+        }
+    }
+
+    public void BecomeVampire()
+    {
+        _gameManangerScript.GameOver("Victory!",
+            "You are now a creature of the night, \n and you thought you where depende on blood befor");
+    }
+
+    public void ShowInfoText(int id)
+    {
+        _infoTextScreen.SetActive(true);
+        _infoText.text = ItemsForSale[id].ItemFlavourText;
+    }
+
+    public void HideInfoText()
+    {
+        _infoTextScreen.SetActive(false);
     }
 
     void SpendBlood(int a)
@@ -129,5 +197,6 @@ public class ShopMananager_Script : MonoBehaviour
     {
         BloodBankText.text = "Blood Stored: \n" + StoredBlood + " l";
     }
+    
 
 }

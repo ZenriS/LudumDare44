@@ -15,7 +15,7 @@ public class PlayerInput_Script : MonoBehaviour
     private float _xScale;
     private float _yScale;
     private Transform _swordPivot;
-
+    private float attackSpeed;
     [HideInInspector] public bool _attackCooldown;
     // Use this for initialization
     void Start ()
@@ -26,6 +26,8 @@ public class PlayerInput_Script : MonoBehaviour
 	    _xScale = transform.localScale.x;
 	    _yScale = transform.localScale.y;
 	    _swordPivot = transform.GetChild(1);
+	    attackSpeed = 1.5f;
+
 	}
 	
 	// Update is called once per frame
@@ -92,10 +94,17 @@ public class PlayerInput_Script : MonoBehaviour
     IEnumerator ResetAttack()
     {
         yield return new WaitForSeconds(0.25f);
-        _swordPivot.DOLocalRotate(new Vector3(0, 0, 0), 1f);
-        yield return new WaitForSeconds(1.1f);
+        _swordPivot.DOLocalRotate(new Vector3(0, 0, 0), attackSpeed);
+        yield return new WaitForSeconds(attackSpeed+0.1f);
         _attackCooldown = false;
         Debug.Log("Attack reset done");
+    }
+
+    public float UpgradeAttackSpeed(float d)
+    {
+        attackSpeed -= d;
+        Debug.Log("Attack Speed: " +attackSpeed);
+        return attackSpeed;
     }
 
     void CamFollow()

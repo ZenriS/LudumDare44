@@ -1,5 +1,6 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
+using TMPro;
 using UnityEngine;
 
 public class PlantBed_Script : MonoBehaviour
@@ -12,17 +13,24 @@ public class PlantBed_Script : MonoBehaviour
     private float _growTimer;
     private bool _fullyGrown;
     private PlayerInv_Script _playerInv;
-    public int FertilizeCost;
+    //public int FertilizeCost;
     private bool _allowInteraction;
     private GameObject seedDrop;
     private int seedGiveAmount;
+    private int _fertilizeUsage;
+    private int _fertilzeLeft;
+    private TextMeshProUGUI _fertilizeText;
 
 
     void Start()
     {
         _spriteRenderer = transform.GetChild(1).GetComponent<SpriteRenderer>();
         _planerSpriteRenderer = transform.GetChild(0).GetComponent<SpriteRenderer>();
+        _fertilizeText = GetComponentInChildren<TextMeshProUGUI>();
+        _fertilizeText.gameObject.SetActive(false);
         _growTimer = 4;
+        _fertilizeUsage = 3;
+
     }
 
     void Update()
@@ -91,8 +99,11 @@ public class PlantBed_Script : MonoBehaviour
     {
         if (!_fertilized)
         {
-            _playerInv.UseBlood(FertilizeCost);
+            _playerInv.UseBlood((int) _playerInv.FertilizeCost);
             _spriteRenderer.color = Color.red;
+            _fertilzeLeft = _fertilizeUsage;
+            _fertilizeText.text = _fertilzeLeft.ToString();
+            _fertilizeText.gameObject.SetActive(true);
             _fertilized = true;
         }
     }
@@ -108,6 +119,9 @@ public class PlantBed_Script : MonoBehaviour
                 seedDrop = _playerInv.Seeds[0].SeedDrop;
                 seedGiveAmount = _playerInv.Seeds[0].SeeDropAmount;
                 _spriteRenderer.color = Color.green;
+                _fertilzeLeft--;
+                _fertilizeText.text = _fertilzeLeft.ToString();
+ 
                 _planted = true;
             }
         }
@@ -142,10 +156,13 @@ public class PlantBed_Script : MonoBehaviour
             {
                 Instantiate(seedDrop, this.transform.position, Quaternion.identity, this.transform);
             }
+            if (_fertilzeLeft <= 0)
+            {
+                _fertilizeText.gameObject.SetActive(false);
+                _spriteRenderer.color = Color.white;
+            }
         }
     }
-
-    
 
     void UpdateGraphics()
     {
