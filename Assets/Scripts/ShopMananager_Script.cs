@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
+using Random = UnityEngine.Random;
 
 public class ShopMananager_Script : MonoBehaviour
 {
@@ -36,8 +37,25 @@ public class ShopMananager_Script : MonoBehaviour
 
     public int StoreBloodAmount;
     public int StoredBlood;
+    private AudioSource _audioSource;
+    public AudioClip BuyAudioClip;
 
-	void Start ()
+    void OnEnable()
+    {
+        GameMananger_Script.SetSFXVolume += UpdateVolume;
+    }
+
+    void OnDisable()
+    {
+        GameMananger_Script.SetSFXVolume -= UpdateVolume;
+    }
+
+    void UpdateVolume(float v)
+    {
+        _audioSource.volume = v;
+    }
+
+    void Start ()
 	{
 	    _playerInv = FindObjectOfType<PlayerInv_Script>();
 	    _playerInput = _playerInv.GetComponent<PlayerInput_Script>();
@@ -45,6 +63,7 @@ public class ShopMananager_Script : MonoBehaviour
 	    _gameManangerScript = _playerInv.GameManagScript;
 	    _infoTextScreen = ShopButtons[0].transform.parent.parent.GetChild(2).gameObject;
 	    _infoText = _infoTextScreen.GetComponentInChildren<TextMeshProUGUI>();
+	    _audioSource = GetComponent<AudioSource>();
 	    ShopUI.SetActive(false);
 	    UpdateBloodBankUI();
         _shopButtonsTexts = new List<TextMeshProUGUI>();
@@ -73,6 +92,7 @@ public class ShopMananager_Script : MonoBehaviour
         SpendBlood(ItemsForSale[0].ItemCost);
         _playerInv.UpdateSeedText();
         UpdateBloodBankUI();
+        PlayBuySound();
     }
 
     public void StoreBlood()
@@ -80,6 +100,7 @@ public class ShopMananager_Script : MonoBehaviour
         _playerInv.UseBlood(StoreBloodAmount);
         StoredBlood += StoreBloodAmount;
         UpdateBloodBankUI();
+        PlayBuySound();
     }
 
     public void UpgradeAttackspeed()
@@ -94,6 +115,7 @@ public class ShopMananager_Script : MonoBehaviour
             ShopButtons[1].interactable = false;
             _shopButtonsTexts[1].text = "At max";
         }
+        PlayBuySound();
     }
 
     public void UpgradeFertilzeCost()
@@ -107,6 +129,7 @@ public class ShopMananager_Script : MonoBehaviour
             ShopButtons[2].interactable = false;
             _shopButtonsTexts[2].text = "At max";
         }
+        PlayBuySound();
     }
 
     public void BuyBloodSword()
@@ -120,12 +143,16 @@ public class ShopMananager_Script : MonoBehaviour
             ShopButtons[3].interactable = false;
             _shopButtonsTexts[3].text = "At max";
         }
+
+        PlayBuySound();
+
     }
 
     public void BecomeVampire()
     {
         _gameManangerScript.GameOver("Victory!",
-            "You are now a creature of the night, \n and you thought you where depende on blood befor");
+            "You are now a creature of the night, \n and you thought you where depende on blood before");
+        PlayBuySound();
     }
 
     public void ShowInfoText(int id)
@@ -137,6 +164,13 @@ public class ShopMananager_Script : MonoBehaviour
     public void HideInfoText()
     {
         _infoTextScreen.SetActive(false);
+    }
+
+    void PlayBuySound()
+    {
+        float r = Random.Range(0.9f, 1.4f);
+        _audioSource.pitch = r;
+        _audioSource.PlayOneShot(BuyAudioClip);
     }
 
     void SpendBlood(int a)

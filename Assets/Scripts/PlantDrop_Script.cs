@@ -27,7 +27,7 @@ public class PlantDrop_Script : MonoBehaviour
         if (col.tag == "Player")
         {
             PlayerInv_Script pi = col.GetComponent<PlayerInv_Script>();
-            if ((pi.BloodAmount + BloodValue) <= pi.MaxBloodAmount)
+            if (pi.BloodAmount < pi.MaxBloodAmount)
             {
                 pi.GainBlood(BloodValue);
                 Destroy(this.gameObject);

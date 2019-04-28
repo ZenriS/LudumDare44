@@ -52,7 +52,7 @@ Transform:
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 1822652649209788}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 1.084, y: 0.8555411, z: 0.0024759115}
+  m_LocalPosition: {x: 2.233, y: 2.718, z: 0.0024759115}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
   - {fileID: 4946140483085816}
@@ -129,6 +129,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   MoveSpeed: 0.5
+  BloodPoolPrefab: {fileID: 1603393411918466, guid: a80cc91fd7cfbeb498c652c9934cc833,
+    type: 2}
 --- !u!212 &212647418519318928
 SpriteRenderer:
   m_ObjectHideFlags: 1

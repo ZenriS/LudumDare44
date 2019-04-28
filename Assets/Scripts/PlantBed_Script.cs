@@ -20,6 +20,27 @@ public class PlantBed_Script : MonoBehaviour
     private int _fertilizeUsage;
     private int _fertilzeLeft;
     private TextMeshProUGUI _fertilizeText;
+    private AudioSource _audioSource;
+    public AudioClip[] AudioClips;
+    public GameObject PlanetBedInfoScreen;
+    private TextMeshProUGUI _plantBedInfoText;
+
+
+    void OnEnable()
+    {
+        _audioSource = GetComponent<AudioSource>();
+        GameMananger_Script.SetSFXVolume += UpdateVolume;
+    }
+
+    void OnDisable()
+    {
+        GameMananger_Script.SetSFXVolume -= UpdateVolume;
+    }
+
+    void UpdateVolume(float v)
+    {
+        _audioSource.volume = v;
+    }
 
 
     void Start()
@@ -28,6 +49,8 @@ public class PlantBed_Script : MonoBehaviour
         _planerSpriteRenderer = transform.GetChild(0).GetComponent<SpriteRenderer>();
         _fertilizeText = GetComponentInChildren<TextMeshProUGUI>();
         _fertilizeText.gameObject.SetActive(false);
+
+        _plantBedInfoText = PlanetBedInfoScreen.GetComponentInChildren<TextMeshProUGUI>();
         _growTimer = 4;
         _fertilizeUsage = 3;
 
@@ -64,9 +87,9 @@ public class PlantBed_Script : MonoBehaviour
             {
                 _playerInv = col.GetComponent<PlayerInv_Script>();
             }
-
             _allowInteraction = true;
-
+            PlanetBedInfoScreen.SetActive(true);
+            UpdateInfoText();
         }
     }
 
@@ -75,6 +98,7 @@ public class PlantBed_Script : MonoBehaviour
         if (col.tag == "Player")
         {
             _allowInteraction = false;
+            PlanetBedInfoScreen.SetActive(false);
         }
     }
 
@@ -95,6 +119,30 @@ public class PlantBed_Script : MonoBehaviour
         }
     }*/
 
+    void UpdateInfoText()
+    {
+        if (!_fertilized)
+        {
+            _plantBedInfoText.text = "Press E \n to fertilize \n for " + _playerInv.FertilizeCost +" blood";
+        }
+        else if (_fertilized && !_planted)
+        {
+            if (_playerInv.Seeds[0].SeedCount > 0)
+            {
+                _plantBedInfoText.text = "Press E \n to plant Blood Flower";
+            }
+            else
+            {
+                _plantBedInfoText.text = "Buy seeds at the shop";
+            }
+
+        }
+        else if (_fertilized && _planted)
+        {
+            _plantBedInfoText.text = "Blood Flower growing";
+        }
+    }
+
     void FertilizBed()
     {
         if (!_fertilized)
@@ -105,6 +153,7 @@ public class PlantBed_Script : MonoBehaviour
             _fertilizeText.text = _fertilzeLeft.ToString();
             _fertilizeText.gameObject.SetActive(true);
             _fertilized = true;
+            UpdateInfoText();
         }
     }
 
@@ -121,8 +170,11 @@ public class PlantBed_Script : MonoBehaviour
                 _spriteRenderer.color = Color.green;
                 _fertilzeLeft--;
                 _fertilizeText.text = _fertilzeLeft.ToString();
- 
                 _planted = true;
+                float r = Random.Range(0.9f, 1.4f);
+                _audioSource.pitch = r;
+                _audioSource.PlayOneShot(AudioClips[0]);
+                UpdateInfoText();
             }
         }
     }
@@ -132,7 +184,7 @@ public class PlantBed_Script : MonoBehaviour
         Debug.Log("plant growing");
         if (_growTimer <= 0)
         {
-            _spriteRenderer.color = Color.blue;
+            //_spriteRenderer.color = Color.blue;
             _fullyGrown = true;
             Invoke("Harvest",1f);
         }
@@ -160,7 +212,11 @@ public class PlantBed_Script : MonoBehaviour
             {
                 _fertilizeText.gameObject.SetActive(false);
                 _spriteRenderer.color = Color.white;
+                _fertilized = false;
             }
+            float r = Random.Range(0.9f, 1.4f);
+            _audioSource.pitch = r;
+            _audioSource.PlayOneShot(AudioClips[1]);
         }
     }
 

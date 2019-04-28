@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using DG.Tweening;
 
 public class Self_Destroy_Script : MonoBehaviour
 {
@@ -21,6 +22,14 @@ public class Self_Destroy_Script : MonoBehaviour
             float t = LifeTime - FadeTime;
             StartCoroutine(FadeTo(t,0, FadeTime));
         }
+
+        float rx = transform.localPosition.x;
+        float ry = transform.localPosition.y;
+        rx += Random.Range(-0.1f, 0.1f);
+        ry += Random.Range(-0.1f, 0.1f);
+
+        Vector3 target = new Vector3(rx, ry, 0);
+        transform.DOLocalMove(target, 1f);
     }
     
     IEnumerator FadeTo(float delay,float aValue, float aTime)
